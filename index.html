@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doação de Robux - Sistema de Saldo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a0033 50%, #2d004d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(128, 0, 255, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+            border: 1px solid rgba(128, 0, 255, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #000000 0%, #2a004d 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            border-bottom: 2px solid #7b00ff;
+        }
+
+        .robux-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 0 10px rgba(123, 0, 255, 0.5));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #b87cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        /* Seção de Saldo */
+        .balance-section {
+            background: linear-gradient(135deg, #0a0a0a 0%, #15002b 100%);
+            padding: 20px;
+            margin: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(123, 0, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .balance-title {
+            color: #b87cff;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .balance-currency {
+            font-size: 24px;
+            color: #b87cff;
+        }
+
+        .balance-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .add-balance-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #2a004d 0%, #3d006b 100%);
+            color: white;
+            border: 1px solid #7b00ff;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .add-balance-btn:hover {
+            background: linear-gradient(135deg, #3d006b 0%, #5c0099 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(123, 0, 255, 0.3);
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .info-box {
+            background: rgba(123, 0, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid #7b00ff;
+        }
+
+        .info-box p {
+            color: #b87cff;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b87cff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #0a0a0a;
+            border: 2px solid #2a004d;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+            color: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #7b00ff;
+            box-shadow: 0 0 0 3px rgba(123, 0, 255, 0.2);
+        }
+
+        input::placeholder {
+            color: #666;
+        }
+
+        .amount-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .amount-btn {
+            background: linear-gradient(135deg, #1a0033 0%, #2a004d 100%);
+            border: 1px solid #7b00ff;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #b87cff;
+        }
+
+        .amount-btn:hover {
+            background: linear-gradient(135deg, #2a004d 0%, #3d006b 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .donate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #7b00ff 0%, #3d006b 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .donate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(123, 0, 255, 0.5);
+        }
+
+        .donate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Histórico */
+        .history-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(123, 0, 255, 0.2);
+        }
+
+        .history-title {
+            color: #b87cff;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(123, 0, 255, 0.1);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            border-left: 3px solid #7b00ff;
+        }
+
+        .history-user {
+            color: #b87cff;
+            font-weight: 600;
+        }
+
+        .history-amount {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .history-date {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .empty-history {
+            color: #666;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+            animation: slideDown 0.3s;
+            border: 2px solid #7b00ff;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+        }
+
+        .modal h2 {
+            margin-bottom: 15px;
+            color: #b87cff;
+        }
+
+        .modal p {
+            color: #ccc;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .close-modal {
+            background: linear-gradient(135deg, #7b00ff 0%, #3d006b 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar personalizada */
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: #1a0033;
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: #7b00ff;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .amount-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="robux-icon">💰</div>
+            <h1>Doação</h1>
+            <p>Envie Robux diretamente do seu saldo</p>
+        </div>
+        
+        <div class="balance-section">
+            <div class="balance-title">SEU SALDO DISPONÍVEL</div>
+            <div class="balance-amount">
+                <span id="balance">0</span>
+                <span class="balance-currency">R$</span>
+            </div>
+            <div class="balance-actions">
+                <button class="add-balance-btn" onclick="addBalance(1000)">+1,000 R$</button>
+                <button class="add-balance-btn" onclick="addBalance(5000)">+5,000 R$</button>
+                <button class="add-balance-btn" onclick="addBalance(10000)">+10,000 R$</button>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="info-box">
+                <p>💜 <strong>Enviar Robux</strong><br>
+                Utilize seu saldo para enviar Robux para outros jogadores. As doações são instantâneas e irreversíveis!</p>
+            </div>
+            
+            <form id="donationForm">
+                <div class="form-group">
+                    <label>👤 Nome do Destinatário</label>
+                    <input type="text" id="username" placeholder="Digite o nome de usuário" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>💰 Quantidade de Robux</label>
+                    <input type="number" id="amount" placeholder="Digite o valor" min="1" required>
+                    <div class="amount-buttons">
+                        <button type="button" class="amount-btn" data-amount="100">100 R$</button>
+                        <button type="button" class="amount-btn" data-amount="500">500 R$</button>
+                        <button type="button" class="amount-btn" data-amount="1000">1,000 R$</button>
+                        <button type="button" class="amount-btn" data-amount="5000">5,000 R$</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="donate-btn" id="donateBtn">🚀 ENVIAR ROBUX</button>
+            </form>
+
+            <div class="history-section">
+                <div class="history-title">
+                    📜 Histórico de Doações
+                </div>
+                <div class="history-list" id="historyList">
+                    <div class="empty-history">Nenhuma doação realizada ainda</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="success-icon" id="modalIcon">✨</div>
+            <h2 id="modalTitle"></h2>
+            <p id="modalMessage"></p>
+            <button class="close-modal" onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de saldo
+        let balance = 5000; // Saldo inicial
+        let donations = [];
+
+        // Carregar dados salvos
+        function loadData() {
+            const savedBalance = localStorage.getItem('robux_balance');
+            const savedDonations = localStorage.getItem('robux_donations');
+            
+            if (savedBalance !== null) {
+                balance = parseInt(savedBalance);
+            }
+            
+            if (savedDonations !== null) {
+                donations = JSON.parse(savedDonations);
+            }
+            
+            updateBalanceDisplay();
+            updateHistoryDisplay();
+        }
+
+        // Salvar dados
+        function saveData() {
+            localStorage.setItem('robux_balance', balance);
+            localStorage.setItem('robux_donations', JSON.stringify(donations));
+        }
+
+        // Atualizar display do saldo
+        function updateBalanceDisplay() {
+            const balanceElement = document.getElementById('balance');
+            balanceElement.textContent = balance.toLocaleString();
+            
+            // Atualizar cor do saldo baseado no valor
+            if (balance < 100) {
+                balanceElement.style.color = '#ff4444';
+            } else if (balance < 1000) {
+                balanceElement.style.color = '#ffaa44';
+            } else {
+                balanceElement.style.color = '#00ff88';
+            }
+        }
+
+        // Adicionar saldo
+        function addBalance(amount) {
+            balance += amount;
+            updateBalanceDisplay();
+            saveData();
+            
+            // Mostrar mensagem de sucesso
+            showModal(
+                '💰 Saldo Adicionado!',
+                `Você adicionou ${amount.toLocaleString()} R$ ao seu saldo!<br><br>Novo saldo: ${balance.toLocaleString()} R$`,
+                '💜'
+            );
+        }
+
+        // Atualizar histórico
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('historyList');
+            
+            if (donations.length === 0) {
+                historyList.innerHTML = '<div class="empty-history">Nenhuma doação realizada ainda</div>';
+                return;
+            }
+            
+            historyList.innerHTML = donations.map(donation => `
+                <div class="history-item">
+                    <div>
+                        <div class="history-user">🎁 Para: ${donation.username}</div>
+                        <div class="history-date">${donation.date}</div>
+                    </div>
+                    <div class="history-amount">-${donation.amount.toLocaleString()} R$</div>
+                </div>
+            `).join('');
+        }
+
+        // Adicionar doação ao histórico
+        function addToHistory(username, amount) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR');
+            
+            donations.unshift({
+                username: username,
+                amount: amount,
+                date: dateStr
+            });
+            
+            // Manter apenas últimas 50 doações
+            if (donations.length > 50) {
+                donations = donations.slice(0, 50);
+            }
+            
+            updateHistoryDisplay();
+            saveData();
+        }
+
+        // Mostrar modal
+        function showModal(title, message, icon = '✨') {
+            const modal = document.getElementById('modal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            
+            modalIcon.textContent = icon;
+            modalTitle.textContent = title;
+            modalMessage.innerHTML = message;
+            
+            modal.style.display = 'flex';
+        }
+
+        // Fechar modal
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'none';
+        }
+
+        // Processar doação
+        function processDonation(username, amount) {
+            // Verificar se tem saldo suficiente
+            if (balance < amount) {
+                showModal(
+                    '❌ Saldo Insuficiente!',
+                    `Você não tem saldo suficiente para doar ${amount.toLocaleString()} R$.<br><br>Seu saldo atual: ${balance.toLocaleString()} R$<br><br>Adicione mais saldo para continuar.`,
+                    '⚠️'
+                );
+                return false;
+            }
+            
+            // Verificar valor mínimo
+            if (amount < 1) {
+                showModal(
+                    '❌ Valor Inválido!',
+                    'Por favor, digite um valor válido para doação (mínimo 1 R$).',
+                    '⚠️'
+                );
+                return false;
+            }
+            
+            // Verificar se o nome não está vazio
+            if (!username.trim()) {
+                showModal(
+                    '❌ Nome Inválido!',
+                    'Por favor, digite o nome do destinatário.',
+                    '⚠️'
+                );
+                return false;
+            }
+            
+            // Processar doação
+            balance -= amount;
+            updateBalanceDisplay();
+            addToHistory(username, amount);
+            saveData();
+            
+            // Mostrar sucesso
+            showModal(
+                '✅ Doação Enviada!',
+                `Você doou ${amount.toLocaleString()} R$ para <strong>${username}</strong> com sucesso!<br><br>Saldo restante: ${balance.toLocaleString()} R$`,
+                '🎉'
+            );
+            
+            return true;
+        }
+
+        // Configurar eventos
+        const form = document.getElementById('donationForm');
+        const amountInput = document.getElementById('amount');
+        const donateBtn = document.getElementById('donateBtn');
+        
+        // Botões de quantidade rápida
+        const amountBtns = document.querySelectorAll('.amount-btn');
+        amountBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const amount = parseInt(this.getAttribute('data-amount'));
+                amountInput.value = amount;
+            });
+        });
+        
+        // Envio do formulário
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const amount = parseInt(amountInput.value);
+            
+            // Desabilitar botão durante processamento
+            donateBtn.disabled = true;
+            const originalText = donateBtn.innerHTML;
+            donateBtn.innerHTML = '<span class="loading"></span> Enviando...';
+            
+            // Simular delay de processamento
+            setTimeout(() => {
+                processDonation(username, amount);
+                
+                // Resetar botão
+                donateBtn.disabled = false;
+                donateBtn.innerHTML = originalText;
+                
+                // Limpar campos (opcional)
+                // document.getElementById('username').value = '';
+                // amountInput.value = '';
+            }, 500);
+        });
+        
+        // Validação do input de quantidade
+        amountInput.addEventListener('input', function() {
+            let value = parseInt(this.value);
+            if (isNaN(value)) value = 0;
+            if (value < 0) this.value = 0;
+            if (value > 999999) this.value = 999999;
+        });
+        
+        // Carregar dados ao iniciar
+        loadData();
+        
+        // Fechar modal clicando fora
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('modal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // Atalho de Enter
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
